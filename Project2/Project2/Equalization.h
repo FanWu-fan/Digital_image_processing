@@ -9,6 +9,7 @@ using namespace cv;
 class Equalization
 {
 public:
+
 	Equalization();
 	void setImage(Mat &image_in);//设置要处理的图片
 	void statistic();//对原图进行均衡处理
