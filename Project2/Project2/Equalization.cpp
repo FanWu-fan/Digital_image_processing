@@ -2,7 +2,7 @@
 
 
 
-Equalization::Equalization()//初始化各个私有成员。
+HistogramEqualization::HistogramEqualization()//初始化各个私有成员。
 {
 	memset(statistic_R, 0, LEVEL * sizeof(int));
 	memset(statistic_G, 0, LEVEL * sizeof(int));
@@ -10,12 +10,12 @@ Equalization::Equalization()//初始化各个私有成员。
 
 }
 
-void Equalization::setImage(Mat & image_in)//设置要处理的图片的路径
+void HistogramEqualization::setImage(Mat & image_in)//设置要处理的图片的路径
 {
 	image = image_in;
 }
 
-void Equalization::statistic()//分别对图片的RGB值进行直方图统计
+void HistogramEqualization::statistic()//分别对图片的RGB值进行直方图统计
 {
 	for (int i = 0; i < image.rows; i++)
 	{
@@ -36,7 +36,7 @@ void Equalization::statistic()//分别对图片的RGB值进行直方图统计
 	}
 }
 
-Mat Equalization::queProcess()//对原图进行均衡处理
+Mat HistogramEqualization::equProcess()//对原图进行均衡处理
 {
 	/*计算原来的各个灰度值经过均衡以后应该变成多少
 	temp数组下标代表原先图像的灰度值
@@ -100,7 +100,7 @@ Mat Equalization::queProcess()//对原图进行均衡处理
 	return imEqu;
 }
 
-Mat Equalization::returnHistogram()
+Mat HistogramEqualization::returnHistogram()
 {
 	double temp_R[LEVEL];//归一化后的概率
 	double max=statistic_R[0];
@@ -119,13 +119,13 @@ Mat Equalization::returnHistogram()
 		temp_R[i] = (double)statistic_R[i] / (double)(image.cols*image.rows);
 		temp_R[i] = temp_R[i] * (double)LEVEL*0.9 / max;//将最大值显示在0.9的位置，其他按照比例计算
 
-		rectangle(dstImage, Point(i, LEVEL-1), Point(i, LEVEL-temp_R[i]), Scalar(255));
+		rectangle(dstImage, Point(i, LEVEL-1), Point(i, LEVEL-temp_R[i]), Scalar(255));//注意这里point（x，y)是(cols,rows),和 .at正好相反
 	}
 	
 	return dstImage;
 }
 
 
-Equalization::~Equalization()
+HistogramEqualization::~HistogramEqualization()
 {
 }

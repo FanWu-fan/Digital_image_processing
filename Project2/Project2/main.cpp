@@ -10,11 +10,11 @@ int main()
 	imshow("原始图像的灰度图", srcImage_gray);
 	imshow("原始图像的彩色图", srcImage_color);
 
-	Equalization equ1,equ2;
+	HistogramEqualization equ1,equ2;
 
 	equ1.setImage(srcImage_gray);
 	equ1.statistic();
-	gray2_equ = equ1.queProcess();//直方图均衡
+	gray2_equ = equ1.equProcess();//直方图均衡
 	srcgray_Histogram = equ1.returnHistogram();
 
 	equ1.setImage(gray2_equ);
@@ -30,7 +30,7 @@ int main()
 
 	equ2.setImage(srcImage_color);
 	equ2.statistic();
-	color2_equ = equ2.queProcess();
+	color2_equ = equ2.equProcess();
 	imshow("变换后彩色图像", color2_equ);
 
 	waitKey(0);

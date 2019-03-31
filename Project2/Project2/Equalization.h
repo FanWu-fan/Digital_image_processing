@@ -9,16 +9,16 @@ using namespace cv;
 #define LEVEL 256//灰度级别
 
 
-class Equalization
+class HistogramEqualization
 {
 public:
 
-	Equalization();
+	HistogramEqualization();
 	void setImage(Mat &image_in);//设置要处理的图片
 	void statistic();//对图片的RGB值进行直方图统计
-	Mat  queProcess();//对原图进行均衡处理
+	Mat  equProcess();//对原图进行均衡处理
 	Mat returnHistogram();//返回归一化后的直方图
-	~Equalization();
+	~HistogramEqualization();
 
 private:
 	//三个私有变量分别统计channel 0, 1,2的灰度级的像素个数
