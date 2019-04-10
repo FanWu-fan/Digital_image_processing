@@ -1,19 +1,22 @@
 #include "Spatial_Filtering.h"
-#include<iostream>
-#include<cmath>
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include <cmath>
+
 using namespace std;
 
 Spafilt::Spafilt()
 {
-	filterSize = 0;
-	filter = NULL;
-	imageMat = NULL;
+	this->filterSize = 0;
+	this->filter = NULL;
+	this->imageMat = NULL;
 }
 
 Spafilt::~Spafilt()
 {
-	if (filter != NULL)
-		delete []filter;
+	if (this->filter != NULL)
+		delete[]this->filter;
 }
 
 Mat Spafilt::linearFilter(Mat &image_in, float filter_in[], int sizeOfFilter_in)
@@ -44,7 +47,7 @@ Mat Spafilt::linearFilter(Mat &image_in, float filter_in[], int sizeOfFilter_in)
 	return image_out;
 }
 
-Mat Spafilt::addSaltAndPepperNoise(Mat image_in, float rate)
+Mat Spafilt::addSaltAndPepperNoise(const Mat &image_in, float rate)
 {
 	Mat image_out = image_in.clone();
 	int numberOfNoise = rate * image_in.rows*image_in.cols;
@@ -63,6 +66,86 @@ Mat Spafilt::addSaltAndPepperNoise(Mat image_in, float rate)
 		}
 	}
 	return image_out;
+}
+
+Mat Spafilt::addPepperNoise(const Mat &image_in, float rate)
+{
+	Mat image_out = image_in.clone();
+	int numberOfNoise = rate * image_in.rows*image_in.cols;
+	srand((unsigned)time(NULL));
+	for (int counter = 0; counter < numberOfNoise; counter++)
+	{
+		int row = rand() % (image_in.rows),
+			col = rand() % (image_in.cols);
+		image_out.at<uchar>(row, col) = 0;
+	}
+	return image_out;
+}
+
+Mat Spafilt::addSaltNoise(const Mat &image_in, float rate)
+{
+	Mat image_out = image_in.clone();
+	int numberOfNoise = rate * image_in.rows*image_in.cols;
+	srand((unsigned)time(NULL));
+	for (int counter = 0; counter < numberOfNoise; counter++)
+	{
+		int row = rand() % (image_in.rows),
+			col = rand() % (image_in.cols);
+		image_out.at<uchar>(row, col) = 255;
+	}
+	return image_out;
+}
+
+double Spafilt::generateGaussianNoise(double mu, double sigma)
+{
+	//定义小值
+	const double epsilon = numeric_limits<double>::min();
+	static double z0, z1;
+	static bool flag = false;
+	flag = !flag;
+	//flag为假构造高斯随机变量X
+	if (!flag)
+		return z1 * sigma + mu;
+	double u1, u2;
+	//构造随机变量
+	do
+	{
+		u1 = rand() * (1.0 / RAND_MAX);
+		u2 = rand() * (1.0 / RAND_MAX);
+	} while (u1 <= epsilon);
+	//flag为真构造高斯随机变量
+	z0 = sqrt(-2.0*log(u1))*cos(2 * CV_PI*u2);
+	z1 = sqrt(-2.0*log(u1))*sin(2 * CV_PI*u2);
+	return z0 * sigma + mu;
+}
+
+Mat Spafilt::addGaussianNoise(const Mat & image_in)
+{
+	Mat dstImage = image_in.clone();
+	int channels = dstImage.channels();
+	int rowsNumber = dstImage.rows;
+	int colsNumber = dstImage.cols*channels;
+	//判断图像的连续性
+	if (dstImage.isContinuous())
+	{
+		colsNumber *= rowsNumber;
+		rowsNumber = 1;
+	}
+	for (int i = 0; i < rowsNumber; i++)
+	{
+		for (int j = 0; j < colsNumber; j++)
+		{
+			//添加高斯噪声
+			int val = dstImage.ptr<uchar>(i)[j] +
+				generateGaussianNoise(2, 0.8) * 32;
+			if (val < 0)
+				val = 0;
+			if (val > 255)
+				val = 255;
+			dstImage.ptr<uchar>(i)[j] = (uchar)val;
+		}
+	}
+	return dstImage;
 }
 
 Mat Spafilt::medianFilter(Mat &image_in, int sizeOfFilter_in)
@@ -308,14 +391,14 @@ void Spafilt::setFilterSize(int size_i)
 
 void Spafilt::setImage(Mat &image_i)//设置将要处理的图片
 {
-	imageSource.create(cvSize(image_i.cols, image_i.rows), CV_8UC1);
+	imageSource.create(image_i.rows, image_i.cols,  CV_8UC1);
 	this->imageSource = image_i;
 }
 
 void Spafilt::borderProcessing()//对边缘进行处理
 {
 	int add = (int)(this->filterSize / 2) * 2;
-	imageAfterBorderProcess.create(cvSize(imageSource.cols + add, imageSource.rows + add), CV_8UC1);
+	imageAfterBorderProcess.create(imageSource.rows + add, imageSource.cols + add,  CV_8UC1);
 	for (int counter1 = 0; counter1 < imageAfterBorderProcess.rows; counter1++)
 	{
 		for (int counter2 = 0; counter2 < imageAfterBorderProcess.cols; counter2++)
@@ -353,8 +436,6 @@ void Spafilt::borderProcessing()//对边缘进行处理
 			}
 		}
 	}
-	/*string s = "borderprocess"+ rand();
-	imshow(s, this->imageAfterBorderProcess);*/
 }
 
 void Spafilt::addOrSubtractOfTwoImage(float coefficient, Mat* image_in)

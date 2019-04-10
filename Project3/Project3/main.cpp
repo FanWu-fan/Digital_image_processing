@@ -1,13 +1,18 @@
-#include "spatial_filtering.h"
+#include "Spatial_Filtering.h"
+#include<opencv2/opencv.hpp>
+
 int main()
 {
-	Mat image = imread("pic.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-	//被图片读入折磨的情况。
-	//验证边缘处理的正确性
-	//验证加和标定的正确性。
-	//数据类型
+	//读入灰度图
+	Mat image = imread("G:\\Code\\Digital_image_processing\\images\\2.jpg", 0);
 	imshow("source_image", image);
+
 	Spafilt spt;
+
+	//-----------------------------[1] 实验3 --------------------------------
+
+	//利用均值模板平滑灰度图像
+
 
 	//线性低通滤波器
 	float filter[9];
