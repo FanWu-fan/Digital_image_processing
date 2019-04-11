@@ -26,7 +26,7 @@ Mat Spafilt::linearFilter(Mat &image_in, float filter_in[], int sizeOfFilter_in)
 	this->borderProcessing();
 
 	Mat image_out(this->imageSource.rows, this->imageSource.cols, CV_8UC1);
-	int add = (int)(this->filterSize / 2);
+	//int add = (int)(this->filterSize / 2);
 	for (int counter1 = 0; counter1 < image_out.rows; counter1++)
 	{
 		for (int counter2 = 0; counter2 < image_out.cols; counter2++)
@@ -45,6 +45,72 @@ Mat Spafilt::linearFilter(Mat &image_in, float filter_in[], int sizeOfFilter_in)
 		}
 	}
 	return image_out;
+}
+
+float * Spafilt::getGaussionArray(int ksize, double sigma)
+{
+	int nWindowSize = ksize;
+	int nCenter = nWindowSize / 2;
+
+	float *pKernel_2 = new float[nWindowSize*nWindowSize];
+	double d_sum = 0.0;
+
+
+	for (int i = 0; i < nWindowSize; i++)
+	{
+		for (int j = 0; j < nWindowSize; j++)
+		{
+			double n_Disx = i - nCenter;//水平方向距离中心像素距离
+			double n_Disy = j - nCenter;
+
+			////////////////////////////划重点！！！////////////////////
+			pKernel_2[j*nWindowSize + i] =
+				//本来要除以一个与Sigma相关的系数， 但由于后面要进行归一化处理，所以生成卷积核时，可忽略系数部分
+				//exp( -1*(n_Disx*n_Disx+n_Disy*n_Disy)/(2*sigma*sigma) )  	/  ((2.0*3.1415926)*sigma*sigma); 
+				exp(-1 * (n_Disx*n_Disx + n_Disy * n_Disy) / (2 * sigma*sigma));
+			d_sum = d_sum + pKernel_2[j*nWindowSize + i];
+		}
+	}
+
+	double k_sum = 0;
+	for (int i = 0; i < nWindowSize; i++)
+	{
+		for (int j = 0; j < nWindowSize; j++)
+		{
+			pKernel_2[j*nWindowSize + i] = pKernel_2[j*nWindowSize + i] / d_sum;
+			k_sum = k_sum + pKernel_2[j*nWindowSize + i];
+		}
+	}
+
+	return pKernel_2;
+}
+
+Mat Spafilt::GasssionFilter(Mat & image_in, int ksize, double sigma)
+{
+	this->setImage(image_in);
+	this->setFilter(ksize, getGaussionArray(ksize,sigma));
+	this->borderProcessing();
+
+	Mat image_out(this->imageSource.rows, this->imageSource.cols, CV_8UC1);
+	for (int counter1 = 0; counter1 < image_out.rows; counter1++)
+	{
+		for (int counter2 = 0; counter2 < image_out.cols; counter2++)
+		{
+			float sum = 0;
+			int coun = 0;
+			for (int counter_1 = counter1; counter_1 < this->filterSize + counter1; counter_1++)
+			{
+				for (int counter_2 = counter2; counter_2 < this->filterSize + counter2; counter_2++)
+				{
+					sum += this->filter[coun] * this->imageAfterBorderProcess.at<uchar>(counter_1, counter_2);
+					coun++;
+				}
+			}
+			image_out.at<uchar>(counter1, counter2) = sum;
+		}
+	}
+	return image_out;
+
 }
 
 Mat Spafilt::addSaltAndPepperNoise(const Mat &image_in, float rate)

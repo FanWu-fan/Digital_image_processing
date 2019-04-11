@@ -58,6 +58,22 @@ public:
 
 
 	/*
+	生成高斯滤波器模板
+	@ksize: 模板大小
+	@sigma: 高斯的标准差 建议取值为 1.5
+	*/
+	float *getGaussionArray(int ksize, double sigma);
+
+	/*
+	高斯滤波
+	@image_in:将要处理的图片
+	@ksize: 模板大小
+	@sigma: 高斯的标准差 建议取值为 1.5
+	*/
+	Mat GasssionFilter( Mat &image_in, int ksize, double sigma);
+
+
+	/*
 	中值滤波器
 	@image_in:将要处理的图片。
 	@sizeOfFiter_in;滤波器大小
