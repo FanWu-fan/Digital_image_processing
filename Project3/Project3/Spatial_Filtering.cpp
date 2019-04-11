@@ -25,26 +25,56 @@ Mat Spafilt::linearFilter(Mat &image_in, float filter_in[], int sizeOfFilter_in)
 	this->setFilter(sizeOfFilter_in, filter_in);
 	this->borderProcessing();
 
-	Mat image_out(this->imageSource.rows, this->imageSource.cols, CV_8UC1);
-	//int add = (int)(this->filterSize / 2);
-	for (int counter1 = 0; counter1 < image_out.rows; counter1++)
+	if (this->imageSource.channels() == 1)
 	{
-		for (int counter2 = 0; counter2 < image_out.cols; counter2++)
+		Mat image_out(this->imageSource.rows, this->imageSource.cols, CV_8UC1);
+		for (int counter1 = 0; counter1 < image_out.rows; counter1++)
 		{
-			float sum = 0;
-			int coun = 0;
-			for (int counter_1 = counter1; counter_1 < this->filterSize + counter1; counter_1++)
+			for (int counter2 = 0; counter2 < image_out.cols; counter2++)
 			{
-				for (int counter_2 = counter2; counter_2 < this->filterSize + counter2; counter_2++)
+				float sum = 0;
+				int coun = 0;
+				for (int counter_1 = counter1; counter_1 < this->filterSize + counter1; counter_1++)
 				{
-					sum += this->filter[coun] * this->imageAfterBorderProcess.at<uchar>(counter_1, counter_2);
-					coun++;
+					for (int counter_2 = counter2; counter_2 < this->filterSize + counter2; counter_2++)
+					{
+						sum += this->filter[coun] * this->imageAfterBorderProcess.at<uchar>(counter_1, counter_2);
+						coun++;
+					}
+				}
+				image_out.at<uchar>(counter1, counter2) = sum;
+			}
+		}
+		return image_out;
+	}
+	else
+	{
+		Mat image_out(this->imageSource.rows, this->imageSource.cols, CV_8UC3);
+
+		for (int channels = 0; channels < 3; channels++)
+		{
+			for (int counter1 = 0; counter1 < image_out.rows; counter1++)
+			{
+				for (int counter2 = 0; counter2 < image_out.cols; counter2++)
+				{
+					float sum = 0;
+					int coun = 0;
+					for (int counter_1 = counter1; counter_1 < this->filterSize + counter1; counter_1++)
+					{
+						for (int counter_2 = counter2; counter_2 < this->filterSize + counter2; counter_2++)
+						{
+							sum += this->filter[coun] * this->imageAfterBorderProcess.at<Vec3b>(counter_1, counter_2)[channels];
+							coun++;
+						}
+					}
+					image_out.at<Vec3b>(counter1, counter2)[channels] = sum;
 				}
 			}
-			image_out.at<uchar>(counter1, counter2) = sum;
 		}
+		
+		return image_out;
 	}
-	return image_out;
+	
 }
 
 float * Spafilt::getGaussionArray(int ksize, double sigma)
@@ -91,25 +121,55 @@ Mat Spafilt::GasssionFilter(Mat & image_in, int ksize, double sigma)
 	this->setFilter(ksize, getGaussionArray(ksize,sigma));
 	this->borderProcessing();
 
-	Mat image_out(this->imageSource.rows, this->imageSource.cols, CV_8UC1);
-	for (int counter1 = 0; counter1 < image_out.rows; counter1++)
+	if (this->imageSource.channels() == 1)
 	{
-		for (int counter2 = 0; counter2 < image_out.cols; counter2++)
+		Mat image_out(this->imageSource.rows, this->imageSource.cols, CV_8UC1);
+		for (int counter1 = 0; counter1 < image_out.rows; counter1++)
 		{
-			float sum = 0;
-			int coun = 0;
-			for (int counter_1 = counter1; counter_1 < this->filterSize + counter1; counter_1++)
+			for (int counter2 = 0; counter2 < image_out.cols; counter2++)
 			{
-				for (int counter_2 = counter2; counter_2 < this->filterSize + counter2; counter_2++)
+				float sum = 0;
+				int coun = 0;
+				for (int counter_1 = counter1; counter_1 < this->filterSize + counter1; counter_1++)
 				{
-					sum += this->filter[coun] * this->imageAfterBorderProcess.at<uchar>(counter_1, counter_2);
-					coun++;
+					for (int counter_2 = counter2; counter_2 < this->filterSize + counter2; counter_2++)
+					{
+						sum += this->filter[coun] * this->imageAfterBorderProcess.at<uchar>(counter_1, counter_2);
+						coun++;
+					}
+				}
+				image_out.at<uchar>(counter1, counter2) = sum;
+			}
+		}
+		return image_out;
+	}
+	else
+	{
+		Mat image_out(this->imageSource.rows, this->imageSource.cols, CV_8UC3);
+
+		for (int channels = 1; channels < 3; channels++)
+		{
+			for (int counter1 = 0; counter1 < image_out.rows; counter1++)
+			{
+				for (int counter2 = 0; counter2 < image_out.cols; counter2++)
+				{
+					float sum = 0;
+					int coun = 0;
+					for (int counter_1 = counter1; counter_1 < this->filterSize + counter1; counter_1++)
+					{
+						for (int counter_2 = counter2; counter_2 < this->filterSize + counter2; counter_2++)
+						{
+							sum += this->filter[coun] * this->imageAfterBorderProcess.at<Vec3b>(counter_1, counter_2)[channels];
+							coun++;
+						}
+					}
+					image_out.at<Vec3b>(counter1, counter2)[channels] = sum;
 				}
 			}
-			image_out.at<uchar>(counter1, counter2) = sum;
 		}
+		
+		return image_out;
 	}
-	return image_out;
 
 }
 
@@ -457,52 +517,122 @@ void Spafilt::setFilterSize(int size_i)
 
 void Spafilt::setImage(Mat &image_i)//设置将要处理的图片
 {
-	imageSource.create(image_i.rows, image_i.cols,  CV_8UC1);
-	this->imageSource = image_i;
+	if (image_i.channels() == 1)
+	{
+		imageSource.create(image_i.rows, image_i.cols, CV_8UC1);
+		this->imageSource = image_i;
+	}
+	else
+	{
+		imageSource.create(image_i.rows, image_i.cols, CV_8UC3);
+		this->imageSource = image_i;
+	}
 }
 
 void Spafilt::borderProcessing()//对边缘进行处理
 {
-	int add = (int)(this->filterSize / 2) * 2;
-	imageAfterBorderProcess.create(imageSource.rows + add, imageSource.cols + add,  CV_8UC1);
-	for (int counter1 = 0; counter1 < imageAfterBorderProcess.rows; counter1++)
+	if (this->imageSource.channels() == 1)
 	{
-		for (int counter2 = 0; counter2 < imageAfterBorderProcess.cols; counter2++)
+		int add = (int)(this->filterSize / 2) * 2;
+		imageAfterBorderProcess.create(imageSource.rows + add, imageSource.cols + add, CV_8UC1);
+		for (int counter1 = 0; counter1 < imageAfterBorderProcess.rows; counter1++)
 		{
-			//当在四个角落的时候直接用128填充
-			if ((counter1 < add / 2 && counter2 < add / 2) || (counter1 >= add / 2 + imageSource.rows && counter2 < add / 2)
-				|| (counter2 >= add / 2 + imageSource.cols && counter1 < add / 2) || (counter1 >= add / 2 + imageSource.rows && counter2 >= add / 2 + imageSource.cols))
+			for (int counter2 = 0; counter2 < imageAfterBorderProcess.cols; counter2++)
 			{
-				imageAfterBorderProcess.at<uchar>(counter1, counter2) = 128;
-			}
-			//在中间部分的时候
-			else if ((counter1 >= add / 2 && counter1 < add / 2 + imageSource.rows) && (counter2 >= add / 2 && counter2 < add / 2 + imageSource.cols))
-			{
-				imageAfterBorderProcess.at<uchar>(counter1, counter2) = imageSource.at<uchar>(counter1 - (add / 2), counter2 - (add / 2));
-			}
-			//在非角落的边缘部分的时候
-			else
-			{
-				if (counter1 < add / 2)
+				//当在四个角落的时候直接用128填充
+				if ((counter1 < add / 2 && counter2 < add / 2) || (counter1 >= add / 2 + imageSource.rows && counter2 < add / 2)
+					|| (counter2 >= add / 2 + imageSource.cols && counter1 < add / 2) || (counter1 >= add / 2 + imageSource.rows && counter2 >= add / 2 + imageSource.cols))
 				{
-					imageAfterBorderProcess.at<uchar>(counter1, counter2) = imageSource.at<uchar>(add / 2 - 1 - counter1, counter2 - add / 2);
+					imageAfterBorderProcess.at<uchar>(counter1, counter2) = 128;
 				}
-				if (counter1 >= add / 2 + imageSource.rows)
+				//在中间部分的时候
+				else if ((counter1 >= add / 2 && counter1 < add / 2 + imageSource.rows) && (counter2 >= add / 2 && counter2 < add / 2 + imageSource.cols))
 				{
-					imageAfterBorderProcess.at<uchar>(counter1, counter2) = imageSource.at<uchar>((imageSource.rows - add / 4) + ((imageSource.rows - add / 4 - 1) - (counter1 - add)) - 1, counter2 - add / 2);
+					imageAfterBorderProcess.at<uchar>(counter1, counter2) = imageSource.at<uchar>(counter1 - (add / 2), counter2 - (add / 2));
 				}
-				if (counter2 < add / 2)
+				//在非角落的边缘部分的时候,采用镜像
+				else
 				{
-					imageAfterBorderProcess.at<uchar>(counter1, counter2) = imageSource.at<uchar>(counter1 - add / 2, add / 2 - 1 - counter2);
-				}
-				if (counter2 >= add / 2 + imageSource.cols)
-				{
-					imageAfterBorderProcess.at<uchar>(counter1, counter2) = imageSource.at<uchar>(counter1 - add / 2, (imageSource.cols - add / 4) + ((imageSource.cols - add / 4 - 1) - (counter2 - add)) - 1);
+					if (counter1 < add / 2)
+					{
+						imageAfterBorderProcess.at<uchar>(counter1, counter2) = imageSource.at<uchar>(add / 2 - 1 - counter1, counter2 - add / 2);
+					}
+					if (counter1 >= add / 2 + imageSource.rows)
+					{
+						imageAfterBorderProcess.at<uchar>(counter1, counter2) = imageSource.at<uchar>((imageSource.rows - add / 4) + ((imageSource.rows - add / 4 - 1) - (counter1 - add)) - 1, counter2 - add / 2);
+					}
+					if (counter2 < add / 2)
+					{
+						imageAfterBorderProcess.at<uchar>(counter1, counter2) = imageSource.at<uchar>(counter1 - add / 2, add / 2 - 1 - counter2);
+					}
+					if (counter2 >= add / 2 + imageSource.cols)
+					{
+						imageAfterBorderProcess.at<uchar>(counter1, counter2) = imageSource.at<uchar>(counter1 - add / 2, (imageSource.cols - add / 4) + ((imageSource.cols - add / 4 - 1) - (counter2 - add)) - 1);
+					}
 				}
 			}
 		}
 	}
-}
+	else
+	{
+		int add = (int)(this->filterSize / 2) * 2;
+		imageAfterBorderProcess.create(imageSource.rows + add, imageSource.cols + add, CV_8UC3);
+		for (int counter1 = 0; counter1 < imageAfterBorderProcess.rows; counter1++)
+		{
+			for (int counter2 = 0; counter2 < imageAfterBorderProcess.cols; counter2++)
+			{
+				//当在四个角落的时候直接用128填充
+				if ((counter1 < add / 2 && counter2 < add / 2) || (counter1 >= add / 2 + imageSource.rows && counter2 < add / 2)
+					|| (counter2 >= add / 2 + imageSource.cols && counter1 < add / 2) || (counter1 >= add / 2 + imageSource.rows && counter2 >= add / 2 + imageSource.cols))
+				{
+					imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[0] = 128;
+					imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[1] = 128;
+					imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[2] = 128;
+				}
+				//在中间部分的时候
+				else if ((counter1 >= add / 2 && counter1 < add / 2 + imageSource.rows) && (counter2 >= add / 2 && counter2 < add / 2 + imageSource.cols))
+				{
+					imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[0] = imageSource.at<Vec3b>(counter1 - (add / 2), counter2 - (add / 2))[0];
+					imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[1] = imageSource.at<Vec3b>(counter1 - (add / 2), counter2 - (add / 2))[1];
+					imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[2] = imageSource.at<Vec3b>(counter1 - (add / 2), counter2 - (add / 2))[2];
+
+				}
+				//在非角落的边缘部分的时候,采用镜像
+				else
+				{
+					if (counter1 < add / 2)
+					{
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[0] = imageSource.at<Vec3b>(add / 2 - 1 - counter1, counter2 - add / 2)[0];
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[1] = imageSource.at<Vec3b>(add / 2 - 1 - counter1, counter2 - add / 2)[1];
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[2] = imageSource.at<Vec3b>(add / 2 - 1 - counter1, counter2 - add / 2)[2];
+					}
+					if (counter1 >= add / 2 + imageSource.rows)
+					{
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[0] = imageSource.at<Vec3b>((imageSource.rows - add / 4) + ((imageSource.rows - add / 4 - 1) - (counter1 - add)) - 1, counter2 - add / 2)[0];
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[1] = imageSource.at<Vec3b>((imageSource.rows - add / 4) + ((imageSource.rows - add / 4 - 1) - (counter1 - add)) - 1, counter2 - add / 2)[1];
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[2] = imageSource.at<Vec3b>((imageSource.rows - add / 4) + ((imageSource.rows - add / 4 - 1) - (counter1 - add)) - 1, counter2 - add / 2)[2];
+
+					}
+					if (counter2 < add / 2)
+					{
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[0] = imageSource.at<Vec3b>(counter1 - add / 2, add / 2 - 1 - counter2)[0];
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[1] = imageSource.at<Vec3b>(counter1 - add / 2, add / 2 - 1 - counter2)[1];
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[2] = imageSource.at<Vec3b>(counter1 - add / 2, add / 2 - 1 - counter2)[2];
+					}
+					if (counter2 >= add / 2 + imageSource.cols)
+					{
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[0] = imageSource.at<Vec3b>(counter1 - add / 2, (imageSource.cols - add / 4) + ((imageSource.cols - add / 4 - 1) - (counter2 - add)) - 1)[0];
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[1] = imageSource.at<Vec3b>(counter1 - add / 2, (imageSource.cols - add / 4) + ((imageSource.cols - add / 4 - 1) - (counter2 - add)) - 1)[1];
+						imageAfterBorderProcess.at<Vec3b>(counter1, counter2)[2] = imageSource.at<Vec3b>(counter1 - add / 2, (imageSource.cols - add / 4) + ((imageSource.cols - add / 4 - 1) - (counter2 - add)) - 1)[2];
+					}
+				}
+			}
+		}
+
+	}
+
+	}
+	
 
 void Spafilt::addOrSubtractOfTwoImage(float coefficient, Mat* image_in)
 {
