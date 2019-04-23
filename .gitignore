@@ -8,8 +8,8 @@ obj/
 *.layout
 .layout
 .vs/
- images/
- 
+images/
+*.avi
  
 Debug/
 ipch/

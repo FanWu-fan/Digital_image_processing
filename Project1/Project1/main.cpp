@@ -58,6 +58,8 @@ void gray_transformation(Mat& inputImage, Mat& outputImage, int Fu_Type, int c)
 //补色,是指任何两种以适当比例混合后而呈现白色或灰色的颜色，即这两种颜色互为补色。总是成对出现。色调环（颜色立体的圆周）上位于对侧的任何两种颜色互为补色。
 //补色对于增强嵌在彩色图像暗区的细节很有用，RGB转换为CMY
 //CMY模型这样的减色混合模型正好适用于彩色打印机和复印机这类需要在纸上沉积彩色颜料的设备，因为颜料不是像显示器那样发出颜色，而是反射颜色。
+
+//对于HSI和HSV图像，H分量须要进行对应的旋转，而亮度分量也须要对应的反转。而饱和度不变，可以得到相似的补色效果。
 void imgRGB2CMY(Mat& inputImage, Mat& outputImage)
 {
 	outputImage = inputImage.clone();
