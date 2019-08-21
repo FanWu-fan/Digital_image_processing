@@ -1,0 +1,14 @@
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/CMakeFiles/install/strip.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/CMakeFiles/install.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/CMakeFiles/install/local.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/CMakeFiles/list_install_components.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/CMakeFiles/edit_cache.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/CMakeFiles/rebuild_cache.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/lib/CMakeFiles/install/strip.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/lib/CMakeFiles/install/local.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/lib/CMakeFiles/hello_static.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/lib/CMakeFiles/hello.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/lib/CMakeFiles/edit_cache.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/lib/CMakeFiles/rebuild_cache.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/lib/CMakeFiles/list_install_components.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t3/build/lib/CMakeFiles/install.dir

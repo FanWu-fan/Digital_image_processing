@@ -1,0 +1,3 @@
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t1/build/CMakeFiles/rebuild_cache.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t1/build/CMakeFiles/hello2.dir
+/mnt/g/Code/Digital_image_processing/SELF_STUDY/cmake_practice/t1/build/CMakeFiles/edit_cache.dir
