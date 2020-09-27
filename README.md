@@ -1,6 +1,2 @@
 # Digital_image_processing
-高级图像处理的课程实验作业
-高图结业于2019.4.23
-考试的重点包括：
-3个计算答题：霍尔曼编码，灰度直方图均衡化，中值滤波。
-其他大概十几个简答题：比如：循环卷积码是什么，傅里叶变换*（-1)^x+y，等问题，不涉及 小波变换，不涉及傅里叶变换的任何计算问题！
+Learn the experimental codes of the book Digital Image Processing, including frequency filtering, Canny edge detection, connected domain search, Harris focus detection and rendering, and fatigue driving detection. None of the APIs provided by Opencv are used.
